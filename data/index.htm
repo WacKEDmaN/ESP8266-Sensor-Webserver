@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>ESP8266 Sensor Thing!</title>
+<style>
+
+BODY { background-color: Black; font-size: 80%; font-family: Tahoma, Helvetica, Sans-Serif; color: white;}
+h1 { color: silver; font-family: Papyrus, Impact, Sans-Serif; text-align:center;}
+h2 { color: LawnGreen; text-align:center;}
+h3 {color:white; font-size: 90%; margin: 2px;}
+table {border-collapse: collapse; text-align: left; table-layout:fixed; width:100%;} 
+table, tr {border: 1px solid silver; background-color: black}
+
+.graphdiv div {display: block; float: left; border: 1px solid white; padding: 5px; margin: 1px; width: 300px; background-color: black;}
+
+</style>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/smoothie/1.27.0/smoothie.js"></script>
+<script type="text/javascript">
+var heapgr = new TimeSeries();
+var tempcgr = new TimeSeries();
+var tempfgr = new TimeSeries();
+var humiditygr = new TimeSeries();
+var pressuregr = new TimeSeries();
+var vccgr = new TimeSeries();
+var rssigr = new TimeSeries();
+var PCFvalue0gr = new TimeSeries();
+var PCFvalue1gr = new TimeSeries();
+var PCFvalue2gr = new TimeSeries();
+var PCFvalue3gr = new TimeSeries();
+var accel1 = new TimeSeries();
+var accel2 = new TimeSeries();
+var accel3 = new TimeSeries();
+var gyro1 = new TimeSeries();
+var gyro2 = new TimeSeries();
+var gyro3 = new TimeSeries();
+var mag1 = new TimeSeries();
+var mag2 = new TimeSeries();
+var mag3 = new TimeSeries();
+
+setInterval(function() {
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			myObj = JSON.parse(this.responseText);
+			document.getElementById("uptime").innerHTML = myObj.uptime;
+			document.getElementById("hour").innerHTML = myObj.hour;
+			document.getElementById("minute").innerHTML = myObj.minute;
+			document.getElementById("second").innerHTML = myObj.second;
+			document.getElementById("weekday").innerHTML = myObj.weekday;
+			document.getElementById("day").innerHTML = myObj.day;
+			document.getElementById("month").innerHTML = myObj.month;
+			document.getElementById("year").innerHTML = myObj.year;
+			document.getElementById("isAM").innerHTML = myObj.isAM;
+			document.getElementById("vcc").innerHTML = myObj.vcc;
+			document.getElementById("avcc").innerHTML = myObj.vcc;
+			document.getElementById("rssi").innerHTML = myObj.rssi;
+			document.getElementById("arssi").innerHTML = myObj.rssi;
+			document.getElementById("cpufreq").innerHTML = myObj.cpufreq;
+			document.getElementById("heap").innerHTML = myObj.heap;
+			document.getElementById("aheap").innerHTML = myObj.heap;
+			document.getElementById("corever").innerHTML = myObj.corever;
+			document.getElementById("chipid").innerHTML = myObj.chipid;
+			document.getElementById("sdkver").innerHTML = myObj.sdkver;
+			document.getElementById("bootver").innerHTML = myObj.bootver;
+			document.getElementById("bootmode").innerHTML = myObj.bootmode;
+			document.getElementById("flashid").innerHTML = myObj.flashid;
+			document.getElementById("flashsize").innerHTML = myObj.flashsize;
+			document.getElementById("flashfreq").innerHTML = myObj.flashfreq;
+			document.getElementById("mode").innerHTML = myObj.mode;
+			document.getElementById("fstotal").innerHTML = myObj.fstotal;
+			document.getElementById("fsused").innerHTML = myObj.fsused;
+			document.getElementById("blocksize").innerHTML = myObj.blocksize;
+			document.getElementById("pagesize").innerHTML = myObj.pagesize;
+			document.getElementById("maxopenfiles").innerHTML = myObj.maxopenfiles;
+			document.getElementById("maxpathlen").innerHTML = myObj.maxpathlen;
+			document.getElementById("PCFvalue0").innerHTML = myObj.PCFvalue0;
+			document.getElementById("aPCFvalue0").innerHTML = myObj.PCFvalue0;
+			document.getElementById("PCFvalue1").innerHTML = myObj.PCFvalue1;
+			document.getElementById("aPCFvalue1").innerHTML = myObj.PCFvalue1;
+			document.getElementById("PCFvalue2").innerHTML = myObj.PCFvalue2;
+			document.getElementById("aPCFvalue2").innerHTML = myObj.PCFvalue2;
+			document.getElementById("PCFvalue3").innerHTML = myObj.PCFvalue3;
+			document.getElementById("aPCFvalue3").innerHTML = myObj.PCFvalue3;
+			document.getElementById("tempc").innerHTML = myObj.tempc;
+			document.getElementById("atempc").innerHTML = myObj.tempc;
+			document.getElementById("tempf").innerHTML = myObj.tempf;
+			document.getElementById("atempf").innerHTML = myObj.tempf;
+			document.getElementById("humidity").innerHTML = myObj.humidity;
+			document.getElementById("ahumidity").innerHTML = myObj.humidity;
+			document.getElementById("pressure").innerHTML = myObj.pressure;
+			document.getElementById("apressure").innerHTML = myObj.pressure;
+			document.getElementById("temp").innerHTML = myObj.temp;
+			document.getElementById("ax").innerHTML = myObj.ax;
+			document.getElementById("ay").innerHTML = myObj.ay;
+			document.getElementById("az").innerHTML = myObj.az;
+			document.getElementById("gx").innerHTML = myObj.gx;
+			document.getElementById("gy").innerHTML = myObj.gy;
+			document.getElementById("gz").innerHTML = myObj.gz;
+			document.getElementById("mx").innerHTML = myObj.mx;
+			document.getElementById("my").innerHTML = myObj.my;
+			document.getElementById("mz").innerHTML = myObj.mz;
+			document.getElementById("aax").innerHTML = myObj.ax;
+			document.getElementById("aay").innerHTML = myObj.ay;
+			document.getElementById("aaz").innerHTML = myObj.az;
+			document.getElementById("agx").innerHTML = myObj.gx;
+			document.getElementById("agy").innerHTML = myObj.gy;
+			document.getElementById("agz").innerHTML = myObj.gz;
+			document.getElementById("amx").innerHTML = myObj.mx;
+			document.getElementById("amy").innerHTML = myObj.my;
+			document.getElementById("amz").innerHTML = myObj.mz;
+		}
+	};
+	xmlhttp.open("GET", "/all", true);
+	xmlhttp.send();
+
+	heapgr.append(new Date().getTime(), myObj.heap);
+	tempcgr.append(new Date().getTime(), myObj.tempc);
+	tempfgr.append(new Date().getTime(), myObj.tempf);
+	humiditygr.append(new Date().getTime(), myObj.humidity);
+	pressuregr.append(new Date().getTime(), myObj.pressure);
+	vccgr.append(new Date().getTime(), myObj.vcc);
+	rssigr.append(new Date().getTime(), myObj.rssi);
+	PCFvalue0gr.append(new Date().getTime(), myObj.PCFvalue0);
+	PCFvalue1gr.append(new Date().getTime(), myObj.PCFvalue1);
+	PCFvalue2gr.append(new Date().getTime(), myObj.PCFvalue2);
+	PCFvalue3gr.append(new Date().getTime(), myObj.PCFvalue3);
+	accel1.append(new Date().getTime(), myObj.ax);
+	accel2.append(new Date().getTime(), myObj.ay);
+	accel3.append(new Date().getTime(), myObj.az);
+	gyro1.append(new Date().getTime(), myObj.gx);
+	gyro2.append(new Date().getTime(), myObj.gy);
+	gyro3.append(new Date().getTime(), myObj.gz);
+	mag1.append(new Date().getTime(), myObj.mx);
+	mag2.append(new Date().getTime(), myObj.my);
+	mag3.append(new Date().getTime(), myObj.mz);
+	
+	
+}, 100);
+
+function createTimeline() {
+	var heapchart = new SmoothieChart({grid:{millisPerLine:10000,verticalSections:10},maxValue: 50000, minValue: 0, millisPerPixel:1000});
+	heapchart.addTimeSeries(heapgr, { strokeStyle: 'rgba(0, 255, 0, 1)', fillStyle: 'rgba(0, 255, 0, 0.2)', lineWidth: 2 });
+	heapchart.streamTo(document.getElementById("heapchart"), 100);
+
+	var tempcchart = new SmoothieChart({grid:{millisPerLine:10000,verticalSections:10},maxValue: 100, minValue: -30, millisPerPixel:1000});
+	tempcchart.addTimeSeries(tempcgr, { strokeStyle: 'rgba(0, 255, 0, 1)', fillStyle: 'rgba(0, 255, 0, 0.2)', lineWidth: 2 });
+	tempcchart.addTimeSeries(tempfgr, { strokeStyle: 'rgba(255, 0, 0, 1)', fillStyle: 'rgba(255, 0, 0, 0.2)', lineWidth: 2 });
+	tempcchart.streamTo(document.getElementById("tempcchart"), 100);
+	
+	
+	var humiditychart = new SmoothieChart({grid:{millisPerLine:10000,verticalSections:10},maxValue: 100, minValue: 0, millisPerPixel:1000});
+	humiditychart.addTimeSeries(humiditygr, { strokeStyle: 'rgba(0, 255, 0, 1)', fillStyle: 'rgba(0, 255, 0, 0.2)', lineWidth: 2 });
+	humiditychart.streamTo(document.getElementById("humiditychart"), 100);
+	
+	var pressurechart = new SmoothieChart({grid:{millisPerLine:10000,verticalSections:10}, maxValue: 1500, minValue: 800, millisPerPixel:1000});
+	pressurechart.addTimeSeries(pressuregr, { strokeStyle: 'rgba(0, 255, 0, 1)', fillStyle: 'rgba(0, 255, 0, 0.2)', lineWidth: 2 });
+	pressurechart.streamTo(document.getElementById("pressurechart"), 100);
+	
+	var vccchart = new SmoothieChart({grid:{millisPerLine:10000,verticalSections:10}, maxValue: 5, minValue: 0, millisPerPixel:1000});
+	vccchart.addTimeSeries(vccgr, { strokeStyle: 'rgba(0, 255, 0, 1)', fillStyle: 'rgba(0, 255, 0, 0.2)', lineWidth: 2 });
+	vccchart.streamTo(document.getElementById("vccchart"), 100);
+	
+	var rssichart = new SmoothieChart({grid:{millisPerLine:10000,verticalSections:10},maxValue: -100, minValue: 0, millisPerPixel:1000});
+	rssichart.addTimeSeries(rssigr, { strokeStyle: 'rgba(0, 255, 0, 1)', fillStyle: 'rgba(0, 255, 0, 0.2)', lineWidth: 2 });
+	rssichart.streamTo(document.getElementById("rssichart"), 100);
+	
+	var PCFvalue0chart = new SmoothieChart({grid:{verticalSections:10}, maxValue: 255, minValue: 0, millisPerPixel:100});
+	PCFvalue0chart.addTimeSeries(PCFvalue0gr, { strokeStyle: 'rgba(255, 0, 0, 1)', lineWidth: 2 });
+	PCFvalue0chart.addTimeSeries(PCFvalue1gr, { strokeStyle: 'rgba(0, 255, 0, 1)', lineWidth: 2 });
+	PCFvalue0chart.addTimeSeries(PCFvalue2gr, { strokeStyle: 'rgba(0, 0, 255, 1)', lineWidth: 2 });
+	PCFvalue0chart.addTimeSeries(PCFvalue3gr, { strokeStyle: 'rgba(255, 255, 255, 1)', lineWidth: 2 });
+	PCFvalue0chart.streamTo(document.getElementById("PCFvalue0chart"), 100);
+	
+	//var PCFvalue1chart = new SmoothieChart({maxValue: 255, minValue: 0});
+	//PCFvalue1chart.addTimeSeries(PCFvalue1gr, { strokeStyle: 'rgba(0, 255, 0, 1)', fillStyle: 'rgba(0, 255, 0, 0.2)', lineWidth: 2 });
+	//PCFvalue1chart.streamTo(document.getElementById("PCFvalue1chart"), 100);
+	
+	//var PCFvalue2chart = new SmoothieChart({maxValue: 255, minValue: 0});
+	//PCFvalue2chart.addTimeSeries(PCFvalue2gr, { strokeStyle: 'rgba(0, 255, 0, 1)', fillStyle: 'rgba(0, 255, 0, 0.2)', lineWidth: 2 });
+	//PCFvalue2chart.streamTo(document.getElementById("PCFvalue2chart"), 100);
+	
+	//var PCFvalue3chart = new SmoothieChart({maxValue: 255, minValue: 0});
+	//PCFvalue3chart.addTimeSeries(PCFvalue3gr, { strokeStyle: 'rgba(0, 255, 0, 1)', fillStyle: 'rgba(0, 255, 0, 0.2)', lineWidth: 2 });
+	//PCFvalue3chart.streamTo(document.getElementById("PCFvalue3chart"), 200);
+	
+	var accel = new SmoothieChart({grid:{verticalSections:10}, maxValue: 2000, minValue: -2000, millisPerPixel:50});
+	accel.addTimeSeries(accel1,{ strokeStyle: 'rgba(255, 0, 0, 1)', lineWidth: 2 });
+	accel.addTimeSeries(accel2,{ strokeStyle: 'rgba(0, 255, 0, 1)', lineWidth: 2 });
+	accel.addTimeSeries(accel3,{ strokeStyle: 'rgba(0, 0, 255, 1)', lineWidth: 2 });
+	accel.streamTo(document.getElementById("accelchart"), 100);
+	
+	var gyro = new SmoothieChart({grid:{verticalSections:10}, maxValue: 100, minValue: -100, millisPerPixel:50});
+	gyro.addTimeSeries(gyro1,{ strokeStyle: 'rgba(255, 0, 0, 1)', lineWidth: 2 });
+	gyro.addTimeSeries(gyro2,{ strokeStyle: 'rgba(0, 255, 0, 1)', lineWidth: 2 });
+	gyro.addTimeSeries(gyro3,{ strokeStyle: 'rgba(0, 0, 255, 1)', lineWidth: 2 });
+	gyro.streamTo(document.getElementById("gyrochart"), 100);
+	
+	var mag = new SmoothieChart({grid:{verticalSections:10}, maxValue: 1000, minValue: -1000, millisPerPixel:50});
+	mag.addTimeSeries(mag1,{ strokeStyle: 'rgba(255, 0, 0, 1)', lineWidth: 2 });
+	mag.addTimeSeries(mag2,{ strokeStyle: 'rgba(0, 255, 0, 1)', lineWidth: 2 });
+	mag.addTimeSeries(mag3,{ strokeStyle: 'rgba(0, 0, 255, 1)', lineWidth: 2 });
+	mag.streamTo(document.getElementById("magchart"), 100);
+	
+}
+</script>
+</head>
+<body onload="createTimeline()">
+
+<div style="display: inline-block; float: left; border: 1px solid white; padding: 5px; margin: 1px; width: 300px; background-color: darkslategray;">
+<table>
+<tr>
+<th colspan="2"> <h2><u>ESP8266 Data</u></h2></th>
+</tr>
+<tr>
+<td>Time:</td><td align="right"><a id="hour"> </a>:<a id="minute"></a>:<a id="second"></a> <a id="isAM"></a></td>
+</tr>
+<tr>
+<td>Date:</td><td align="right"><a id="weekday"></a> <a id="day"></a>/<a id="month"></a>/<a id="year"></a></td>
+</tr>
+<tr>
+<td>Uptime:</td><td align="right"><a id="uptime"></a></td>
+</tr>
+<tr>
+<td>Voltage:</td><td align="right"><a id="vcc"></a>v</td>
+</tr>
+<tr>
+<td>WiFi Signal Strength:</td><td align="right"><a id="rssi"></a>dBm</td>
+</tr>
+<tr>
+<td>Free Heap:</td><td align="right"><a id="heap"></a>b</td>
+</tr>
+<tr>
+<td>ESP8266 ID:</td><td align="right"><a id="chipid"></a></td>
+</tr>
+<tr>
+<td>MCU Frequency:</td><td align="right"><a id="cpufreq"></a> MHz</td>
+</tr>
+<tr>
+<td>Core Version:</td><td align="right"><a id="corever"></a></td>
+</tr>
+<tr>
+<td>SDK Version:</td><td align="right"><a id="sdkver"></a></td>
+</tr>
+<tr>
+<td>Boot Version:</td><td align="right"><a id="bootver"></a></td>
+</tr>
+<tr>
+<td>Boot Mode:</td><td align="right"><a id="bootmode"></a></td>
+</tr>
+<tr>
+<td>Flash ID:</td><td align="right"><a id="flashid"></a></td>
+</tr>
+<tr>
+<td>Flash Size:</td><td align="right"><a id="flashsize"></a> MB</td>
+</tr>
+<tr>
+<td>Flash Speed:</td><td align="right"><a id="flashfreq"></a> MHz</td>
+</tr>
+<tr>
+<td>Flash Mode:</td><td align="right"><a id="mode"></a></td>
+</tr>
+<tr>
+<td>File System Total:</td><td align="right"><a id="fstotal"></a> KB</td>
+</tr>
+<tr>
+<td>File System Used:</td><td align="right"><a id="fsused"></a> KB</td>
+</tr>
+<tr>
+<td>Blocksize:</td><td align="right"><a id="blocksize"></a></td>
+</tr>
+<tr>
+<td>Pagesize:</td><td align="right"><a id="pagesize"></a></td>
+</tr>
+<tr>
+<td>Max Open Files:</td><td align="right"><a id="maxopenfiles"></a></td>
+</tr>
+<tr>
+<td>Max Path Length:</td><td align="right"><a id="maxpathlen"></a></td>
+</tr>
+</table>
+<br>
+<table>
+<tr>
+<th colspan="2"><h2><u>Sensor Data</u></h2></th>
+</tr>
+<tr>
+<th colspan="2"><h3><u>PCF8591 AD/DA converter</u></h3></th>
+</tr>
+<tr>
+<td>ADC 0 Photoresistor:</td><td align="right"><a id="PCFvalue0"></a></td>
+</tr>
+<tr>
+<td>ADC 1 Thermistor:</td><td align="right"><a id="PCFvalue1"></a></td>
+</tr>
+<tr>
+<td>ADC 2 Analog Input:</td><td align="right"><a id="PCFvalue2"></a></td>
+</tr>
+<tr>
+<td>ADC 3 10K&#8486; Potentiometer:</td><td align="right"><a id="PCFvalue3"></a></td>
+</tr>
+
+<tr>
+<th colspan="2"><h3><u>BMP280 Barometric Pressure Sensor</u></h3></th>
+</tr>
+
+<tr>
+<td>Temperature:</td><td align="right"><a id="tempc", color:#00FF00></a> &#8451;/<a id="tempf", color:#FF0000></a> &#8457;</td>
+</tr>
+
+<tr>
+<td>Humidity:</td><td align="right"><a id="humidity"></a> %</td>
+</tr>
+<tr>
+<td>Pressure:</td><td align="right"><a id="pressure"></a> hPa</td>
+</tr>
+
+<tr>
+<th colspan="2"><h3><u>MPU9250 9-axis MotionTracking device</u></h3></th>
+</tr>
+
+<tr>
+<td>Temperature:</td><td align="right"><a id="temp"></a>&deg;C</td>
+</tr>
+
+<tr>
+<td>Accelerometer:</td><td align="right"><a id="ax"></a>, <a id="ay"></a>, <a id="az"></a></td>
+</tr>
+<tr>
+<td>Gyroscope:</td><td align="right"><a id="gx"></a>, <a id="gy"></a>, <a id="gz"></a></td>
+</tr>
+<tr>
+<td>Magnetometer:</td><td align="right"><a id="mx"></a>, <a id="my"></a>, <a id="mz"></a></td>
+</tr>
+</table>
+</div>
+
+<div style="display: block; float: left; border: 1px solid white; padding: 5px; margin: 1px; width: 630px; background-color: darkslategray;">
+
+
+<div class="graphdiv">
+<div>
+<h3 style="align: left;">Voltage <a id="avcc", style="color:#00FF00;"></a><a>v </a></h3>
+<canvas id="vccchart" width="300" height="150"></canvas>
+</div>
+<div>
+<h3 style="align: left;">Free Heap <a id="aheap" style"color:#00FF00;"></a>v</h3>
+<canvas id="heapchart" width "300" height="150"></canvas>
+</div>
+<div>
+<h3>WiFi Strength <a id="arssi", style="color:#00FF00"></a><a>dBm </a></h3>
+<canvas id="rssichart" width="300" height="150"></canvas>
+</div>
+<div>
+<h3>Temperature <a id="atempc", style="color:#00FF00"></a> &deg;C/<a id="atempf", style="color:#FF0000"></a> &deg;F</h3>
+<canvas id="tempcchart" width="300" height="150"></canvas>
+</div>
+<div>
+<h3>Humidity <a id="ahumidity", style="color:#00FF00"></a>%</h3>
+<canvas id="humiditychart" width="300" height="150"></canvas>
+</div>
+<div>
+<h3>Pressure <a id="apressure", style="color:#00FF00"></a> hPa</h3>
+<canvas id="pressurechart" width="300" height="150"></canvas>
+</div>
+<div>
+<h3>PCF8591  <a id="aPCFvalue0", style="color:#FF0000"></a>,<a id="aPCFvalue1", style="color:#00FF00"></a>,<a id="aPCFvalue2", style="color:#0000FF"></a>,<a id="aPCFvalue3", style="color:#FFFFFF"></a></h3>
+<canvas id="PCFvalue0chart" width="300" height="150"></canvas>
+</div>
+<div>
+<h3>Accelerometer <a id="aax", style="color:#FF0000"></a>,<a id="aay", style="color:#00FF00"></a>,<a id="aaz", style="color:#0000FF"></a></h3>
+<canvas id="accelchart" width="300" height="150"></canvas>
+</div>
+<div>
+<h3>Gyroscope <a id="agx", style="color:#FF0000"></a>,<a id="agy", style="color:#00FF00"></a>,<a id="agz", style="color:#0000FF"></a></h3>
+<canvas id="gyrochart" width="300" height="150"></canvas>
+</div>
+<div>
+<h3>Magnetometer <a id="amx", style="color:#FF0000"></a>,<a id="amy", style="color:#00FF00"></a>,<a id="amz", style="color:#0000FF"></a></h3>
+<canvas id="magchart" width="300" height="150"></canvas>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
